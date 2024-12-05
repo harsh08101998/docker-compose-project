@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: student_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
+  
+  flask_app:
+    build:
+      context: ./python_code
+    container_name: flask_app
+    environment:
+      FLASK_ENV: development
+      MYSQL_HOST: mysql
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+      MYSQL_DB: student_db
+    ports:
+       - "5000:5000"
+    depends_on:
+      - mysql
+volumes:
+  mysql_data:
